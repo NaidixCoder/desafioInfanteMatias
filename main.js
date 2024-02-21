@@ -5,18 +5,19 @@ class ProductManager {
 
     addProduct(title, description, price, thumbnail, stock, code) {
 
-        if (!title || !description || !price || !thumbnail || !stock) {
+
+        if (!title || !description || !price || !thumbnail || !stock || !code) {
             console.error('Error: Todos los campos son obligatorios');
             return;
         }
 
-        if (this.products.some(prod => prod.code === code)) {
-            console.error('Error: Ya existe un producto con ese código');
+        if (this.isCodeDuplicate(code)) {
             return;
         }
 
         const product = {
-            code: this.#getCode(code),
+            id: this.#getID(),
+            code: code,
             title: title,
             description: description,
             price: price,
@@ -28,14 +29,18 @@ class ProductManager {
         console.log(`Producto agregado: ${JSON.stringify(product)}`);
     }
 
-    #getCode(code) {
-        if (code !== undefined) {
-            // Si se proporciona un código manualmente, lo retornamos
-            return code;
+    isCodeDuplicate(code) {
+        if (code !== undefined && this.products.some(prod => prod.code === code)) {
+            
+            console.error(`Error: Ya existe un producto con el código: "${code}"`);
+            return true;
         }
-            // Si no se proporciona un código manualmente, genera el AUTOINCREMENTAL.
+        return false;
+    }
+
+    #getID() {
         if (this.products.length === 0) return 1;
-        return this.products[this.products.length - 1].code + 1;
+        return this.products[this.products.length - 1].id + 1;
     }
 
     getProducts() {
@@ -43,49 +48,54 @@ class ProductManager {
     }
 
     getProductById(productId) {
-        const product = this.products.find(prod => prod.code === productId);
+        const product = this.products.find(prod => prod.id === productId);
 
         if (product) {
-            return console.log(product);  
+            console.log(product);  
         } else {
-            console.error('Error: Producto no encontrado');
+            console.error(`Error: ID: ${productId}, no encontrado`);
         }
     }
 }
 
-const PRODUCTOS = new ProductManager();
+// const PRODUCTOS = new ProductManager();   -----> Corrección camelCase
+const mainProductManager = new ProductManager();
 
 // Carga de productos
+// title, description, price, thumbnail, stock, code
 console.log("CARGA DE PRODUCTOS:")
-PRODUCTOS.addProduct('Reel de pesca', 'Reel para pesca deportiva', 1500, '../reel.png', 10);
-PRODUCTOS.addProduct('Caña de pescar', 'Caña de pescar resistente y ligera', 800, '../cana.png', 10);
-PRODUCTOS.addProduct('Señuelo realista', 'Señuelo para atraer peces de manera efectiva', 2500, '../senuelo.png', 10);
-PRODUCTOS.addProduct('Anzuelos variados', 'Anzuelos de diferentes tamaños y tipos', 1800, '../anzuelos.png', 10);
+mainProductManager.addProduct("product-1", "desc-1", 1000, "../path1", 10, "codigo-1")
+mainProductManager.addProduct("product-2", "desc-2", 1000, "../path2", 10, "codigo-2")
+mainProductManager.addProduct("product-3", "desc-3", 1000, "../path3", 10, "codigo-3")
 console.log("CARGA DE PRODUCTOS FINALIZADA")
 console.log("...")
 
 
 // No lo agrega porque falta la descripcion del producto
 console.log("CARGA DE PRODUCTO QUE LE FALTA DESCRIPCION:")  // AGREGO CLG PARA FACILITAR LECTURA EN LA CONSOLA.
-PRODUCTOS.addProduct('Caña de pescar', 800, '../cana.png', 10);
+mainProductManager.addProduct("product-4", 1000, "../path4", 10, "codigo-4")
 console.log("...")
 
-// No lo agrega porque se repite el ID.
+// No lo agrega porque se repite el CODE.
 console.log("CARGA DE PRODUCTO CON CODE REPETIDO:")
-PRODUCTOS.addProduct('Botas de pesca', 'Botas impermeables ideales para la pesca', 2000, '../botas.png', 128, 1);
+mainProductManager.addProduct("product-1", "desc-1", 1000, "../path1", 10, "codigo-1")
+mainProductManager.addProduct("product-2", "desc-2", 1000, "../path2", 10, "codigo-2")
+mainProductManager.addProduct("product-3", "desc-3", 1000, "../path3", 10, "codigo-3")
 console.log("...")
 
 // Array de PRODUCTOS
 console.log("CARGA DE ARRAY DE PRODUCTOS: ")
-console.log(PRODUCTOS.getProducts());
+console.log(mainProductManager.getProducts());
 console.log("...")
 
 // Busqueda segun ID
-console.log("BUSQUEDA DEL CODE 3:")
-PRODUCTOS.getProductById(3);
+console.log("BUSQUEDA DEL ID 3:")
+mainProductManager.getProductById(3);
 console.log("...")
 
 // Busqueda ID INEXISTENTE
-console.log("BUSQUEDA CODE INEXISTENTE:")
-PRODUCTOS.getProductById(29);
+console.log("BUSQUEDA ID INEXISTENTE:")
+mainProductManager.getProductById(29);
+mainProductManager.getProductById(32);
+mainProductManager.getProductById(45);
 console.log("FIN PRUEBAS")
