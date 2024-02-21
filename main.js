@@ -5,13 +5,7 @@ class ProductManager {
 
     addProduct(title, description, price, thumbnail, stock, code) {
 
-
-        if (!title || !description || !price || !thumbnail || !stock || !code) {
-            console.error('Error: Todos los campos son obligatorios');
-            return;
-        }
-
-        if (this.isCodeDuplicate(code)) {
+        if (this.validateInputs(title, description, price, thumbnail, stock, code)) {
             return;
         }
 
@@ -29,13 +23,18 @@ class ProductManager {
         console.log(`Producto agregado: ${JSON.stringify(product)}`);
     }
 
-    isCodeDuplicate(code) {
-        if (code !== undefined && this.products.some(prod => prod.code === code)) {
-            
+    validateInputs(title, description, price, thumbnail, stock, code) {
+        if (!title || !description || !price || !thumbnail || !stock || !code) {
+            console.error('Error: Todos los campos son obligatorios');
+            return true;
+        }
+    
+        if (this.products.some(prod => prod.code === code)) {
             console.error(`Error: Ya existe un producto con el código: "${code}"`);
             return true;
         }
-        return false;
+    
+        return false;  // False ---> si no hay errores
     }
 
     #getID() {
